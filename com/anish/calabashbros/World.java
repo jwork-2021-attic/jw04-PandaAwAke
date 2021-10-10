@@ -2,19 +2,20 @@ package com.anish.calabashbros;
 
 public class World {
 
-    public static final int WIDTH = 40;
-    public static final int HEIGHT = 20;
+    private int width, height;
 
     private Tile<Thing>[][] tiles;
 
-    public World() {
+    public World(int width, int height) {
+        this.width = width;
+        this.height = height;
 
         if (tiles == null) {
-            tiles = new Tile[WIDTH][HEIGHT];
+            tiles = new Tile[width][height];
         }
 
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
                 tiles[i][j] = new Tile<>(i, j);
                 tiles[i][j].setThing(new Floor(this));
             }
@@ -27,6 +28,14 @@ public class World {
 
     public void put(Thing t, int x, int y) {
         this.tiles[x][y].setThing(t);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
 }

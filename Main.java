@@ -1,5 +1,4 @@
 
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -17,12 +16,14 @@ public class Main extends JFrame implements KeyListener {
     private AsciiPanel terminal;
     private Screen screen;
 
+    public static final int DIMENSION = 30;
+
     public Main() {
         super();
-        terminal = new AsciiPanel(World.WIDTH, World.HEIGHT, AsciiFont.TALRYTH_15_15);
+        terminal = new AsciiPanel(DIMENSION, DIMENSION, AsciiFont.TALRYTH_15_15);
         add(terminal);
         pack();
-        screen = new WorldScreen();
+        screen = new WorldScreen(DIMENSION);
         addKeyListener(this);
         repaint();
 

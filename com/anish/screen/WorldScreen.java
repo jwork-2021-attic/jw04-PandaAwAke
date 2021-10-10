@@ -3,84 +3,91 @@ package com.anish.screen;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
-import com.anish.calabashbros.BubbleSorter;
 import com.anish.calabashbros.Calabash;
+import com.anish.calabashbros.Floor;
+import com.anish.calabashbros.Wall;
 import com.anish.calabashbros.World;
+import com.anish.maze.Maze;
+import com.anish.maze.Node;
+import com.anish.maze.Player;
+import com.anish.maze.Player.Direction;
 
 import asciiPanel.AsciiPanel;
 
 public class WorldScreen implements Screen {
 
     private World world;
-    private Calabash[] bros;
-    String[] sortSteps;
+    private Maze maze;
+    private Player player;
 
-    public WorldScreen() {
-        world = new World();
+    private int dimension;
 
-        bros = new Calabash[7];
+    public WorldScreen(int dimension) {
+        this.dimension = dimension;
+        world = new World(dimension, dimension);
 
-        bros[3] = new Calabash(new Color(204, 0, 0), 1, world);
-        bros[5] = new Calabash(new Color(255, 165, 0), 2, world);
-        bros[1] = new Calabash(new Color(252, 233, 79), 3, world);
-        bros[0] = new Calabash(new Color(78, 154, 6), 4, world);
-        bros[4] = new Calabash(new Color(50, 175, 255), 5, world);
-        bros[6] = new Calabash(new Color(114, 159, 207), 6, world);
-        bros[2] = new Calabash(new Color(173, 127, 168), 7, world);
+        maze = new Maze(dimension);
+        Node entry = maze.getAnEntry();
+        assert entry != null;
 
-        world.put(bros[0], 10, 10);
-        world.put(bros[1], 12, 10);
-        world.put(bros[2], 14, 10);
-        world.put(bros[3], 16, 10);
-        world.put(bros[4], 18, 10);
-        world.put(bros[5], 20, 10);
-        world.put(bros[6], 22, 10);
+        Calabash brother = new Calabash(new Color(204, 0, 0), world);
+        player = new Player(maze, world, entry.x, entry.y, brother);
 
-        BubbleSorter<Calabash> b = new BubbleSorter<>();
-        b.load(bros);
-        b.sort();
+        initializeWorldTiles();
+        world.put(brother, entry.x, entry.y);
 
-        sortSteps = this.parsePlan(b.getPlan());
     }
 
-    private String[] parsePlan(String plan) {
-        return plan.split("\n");
-    }
+    private void initializeWorldTiles() {
+        Wall wall = new Wall(world);
+        Floor floor = new Floor(world);
 
-    private void execute(Calabash[] bros, String step) {
-        String[] couple = step.split("<->");
-        getBroByRank(bros, Integer.parseInt(couple[0])).swap(getBroByRank(bros, Integer.parseInt(couple[1])));
-    }
-
-    private Calabash getBroByRank(Calabash[] bros, int rank) {
-        for (Calabash bro : bros) {
-            if (bro.getRank() == rank) {
-                return bro;
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                if (maze.isFloor(i, j)) {
+                    world.put(floor, i, j);
+                } else {
+                    world.put(wall, i, j);
+                }
             }
         }
-        return null;
     }
 
     @Override
     public void displayOutput(AsciiPanel terminal) {
 
-        for (int x = 0; x < World.WIDTH; x++) {
-            for (int y = 0; y < World.HEIGHT; y++) {
-
-                terminal.write(world.get(x, y).getGlyph(), x, y, world.get(x, y).getColor());
-
+        for (int i = 0; i < world.getHeight(); i++) {
+            for (int j = 0; j < world.getWidth(); j++) {
+                terminal.write(world.get(i, j).getGlyph(), j, i, world.get(i, j).getColor());
             }
         }
     }
 
-    int i = 0;
-
     @Override
     public Screen respondToUserInput(KeyEvent key) {
 
-        if (i < this.sortSteps.length) {
-            this.execute(bros, sortSteps[i]);
-            i++;
+        Direction direction = null;
+        switch (key.getKeyCode()) {
+            case KeyEvent.VK_A:
+            case KeyEvent.VK_LEFT:
+                direction = Direction.left;
+                break;
+            case KeyEvent.VK_W:
+            case KeyEvent.VK_UP:
+                direction = Direction.up;
+                break;
+            case KeyEvent.VK_D:
+            case KeyEvent.VK_RIGHT:
+                direction = Direction.right;
+                break;
+            case KeyEvent.VK_S:
+            case KeyEvent.VK_DOWN:
+                direction = Direction.down;
+                break;
+        }
+
+        if (direction != null && player.canMove(direction)) {
+            player.doMove(direction);
         }
 
         return this;
