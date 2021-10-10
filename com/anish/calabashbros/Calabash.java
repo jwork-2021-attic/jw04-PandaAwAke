@@ -22,6 +22,8 @@ public class Calabash extends Creature implements Comparable<Calabash> {
 
     @Override
     public int compareTo(Calabash o) {
+        if (o == null)
+            return -1;
         return Integer.valueOf(this.rank).compareTo(Integer.valueOf(o.rank));
     }
 
