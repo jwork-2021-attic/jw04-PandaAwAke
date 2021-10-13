@@ -2,11 +2,13 @@ package com.anish.screen;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 import com.anish.calabashbros.BubbleSorter;
 import com.anish.calabashbros.Calabash;
 import com.anish.calabashbros.World;
 import com.anish.calabashbros.ComparableMatrix;
+import com.anish.calabashbros.Thing;
 
 import asciiPanel.AsciiPanel;
 
@@ -19,22 +21,31 @@ public class WorldScreen implements Screen {
     public WorldScreen() {
         world = new World();
 
-        bros = new ComparableMatrix<>(3, 3, 7);
-        bros.setElement(1, 0, new Calabash(new Color(204, 0, 0), 1, world));
-        bros.setElement(1, 2, new Calabash(new Color(255, 165, 0), 2, world));
-        bros.setElement(0, 1, new Calabash(new Color(252, 233, 79), 3, world));
-        bros.setElement(0, 0, new Calabash(new Color(78, 154, 6), 4, world));
-        bros.setElement(1, 1, new Calabash(new Color(50, 175, 255), 5, world));
-        bros.setElement(2, 0, new Calabash(new Color(114, 159, 207), 6, world));
-        bros.setElement(0, 2, new Calabash(new Color(173, 127, 168), 7, world));
+        bros = new ComparableMatrix<>(7, 7, 49);
+        Random random = new Random();
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                int r = random.nextInt(256), g = random.nextInt(256), b = random.nextInt(256);
+                Calabash calabash = new Calabash(new Color(r, g, b), (int) (r * 0.299 + g * 0.587 + b * 0.114), world);
+                bros.setElement(i, j, calabash);
+                world.put(calabash, 10 + 2 * j, 2 + 2 * i);
+            }
+        }
+        // bros.setElement(1, 0, new Calabash(new Color(204, 0, 0), 1, world));
+        // bros.setElement(1, 2, new Calabash(new Color(255, 165, 0), 2, world));
+        // bros.setElement(0, 1, new Calabash(new Color(252, 233, 79), 3, world));
+        // bros.setElement(0, 0, new Calabash(new Color(78, 154, 6), 4, world));
+        // bros.setElement(1, 1, new Calabash(new Color(50, 175, 255), 5, world));
+        // bros.setElement(2, 0, new Calabash(new Color(114, 159, 207), 6, world));
+        // bros.setElement(0, 2, new Calabash(new Color(173, 127, 168), 7, world));
 
-        world.put((Calabash) bros.getElement(0, 0), 18, 8);
-        world.put((Calabash) bros.getElement(0, 1), 20, 8);
-        world.put((Calabash) bros.getElement(0, 2), 22, 8);
-        world.put((Calabash) bros.getElement(1, 0), 18, 10);
-        world.put((Calabash) bros.getElement(1, 1), 20, 10);
-        world.put((Calabash) bros.getElement(1, 2), 22, 10);
-        world.put((Calabash) bros.getElement(2, 0), 18, 12);
+        // world.put((Calabash) bros.getElement(0, 0), 18, 8);
+        // world.put((Calabash) bros.getElement(0, 1), 20, 8);
+        // world.put((Calabash) bros.getElement(0, 2), 22, 8);
+        // world.put((Calabash) bros.getElement(1, 0), 18, 10);
+        // world.put((Calabash) bros.getElement(1, 1), 20, 10);
+        // world.put((Calabash) bros.getElement(1, 2), 22, 10);
+        // world.put((Calabash) bros.getElement(2, 0), 18, 12);
 
         BubbleSorter<Calabash> b = new BubbleSorter<>();
         b.load(bros);
